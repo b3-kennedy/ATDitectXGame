@@ -5,7 +5,14 @@
       <FullPath>C:\Users\Ben\source\repos\ATDirectX\Debug\DirectX11Game.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\PixelShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\VertexShader.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

@@ -5,7 +5,7 @@ App::App() : window(1920, 1080, "DirectX Game") {};
 
 int App::Go()
 {
-    window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
+    
     while(true)
     {
         if(const auto code = Window::ProcessMessages())
@@ -18,5 +18,7 @@ int App::Go()
 
 void App::DoFrame() 
 {
+    window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
+    window.getGfx().DrawTriangle();
     window.getGfx().EndFrame();
 }
