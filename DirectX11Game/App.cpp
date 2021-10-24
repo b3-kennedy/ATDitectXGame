@@ -19,6 +19,6 @@ int App::Go()
 void App::DoFrame() 
 {
     window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
-    window.getGfx().DrawTriangle();
+    window.getGfx().DrawTriangle(timer.Peek()/10000000000.0f);
     window.getGfx().EndFrame();
 }

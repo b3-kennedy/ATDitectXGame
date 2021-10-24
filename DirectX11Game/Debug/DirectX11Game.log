@@ -1,7 +1,6 @@
-﻿  compilation object save succeeded; see C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\PixelShader.cso
-  App.cpp
-  Graphics.cpp
-  Keyboard.cpp
-  Source.cpp
-  Window.cpp
+﻿  Graphics.cpp
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\Graphics.cpp(87,15): warning C4838: conversion from 'float' to 'unsigned char' requires a narrowing conversion
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\Graphics.cpp(87,15): warning C4244: 'initializing': conversion from 'float' to 'unsigned char', possible loss of data
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\Graphics.cpp(88,16): warning C4838: conversion from 'float' to 'unsigned char' requires a narrowing conversion
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\Graphics.cpp(88,16): warning C4244: 'initializing': conversion from 'float' to 'unsigned char', possible loss of data
   DirectX11Game.vcxproj -> C:\Users\Ben\source\repos\ATDirectX\Debug\DirectX11Game.exe

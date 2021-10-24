@@ -1,6 +1,8 @@
 #include "Graphics.h"
 #include <d3dcompiler.h>
 #include <array>
+#include <cmath>
+#include <DirectXMath.h>
 
 #pragma comment(lib, "D3DCompiler.lib")
 
@@ -20,7 +22,7 @@ Graphics::Graphics(HWND hWnd)
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = 1;
 	sd.OutputWindow = hWnd;
-	sd.Windowed = TRUE;
+	sd.Windowed = FALSE;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = 0;
 
@@ -60,41 +62,106 @@ void Graphics::EndFrame()
 	pSwap->Present(1u, 0u);
 }
 
-void Graphics::DrawTriangle()
+void Graphics::DrawTriangle(float angle)
 {
 	
 
 	struct Vertex
 	{
-		float x;
-		float y;
+		struct 
+		{
+			float x;
+			float y;
+		}pos;
+		struct 
+		{
+			unsigned char r;
+			unsigned char g;
+			unsigned char b;
+			unsigned char a;
+		}colour;
 	};
 
 	const Vertex vertices[] =
 	{
-		{0.0f,0.5f},
-		{0.5f,-0.5f},
-		{-0.5f,-0.5f},
+		{0.0f,0.5f,255,0,0,0},
+		{0.5f,-0.5f,0.0f,255,0,0},
+		{-0.5f,-0.5f,0.0f,0,255,0},
+
+		//{0.5f,1.0f},
+		//{1.0f,0.5f},
+		//{0.5f,0.5f},
+	};
+
+	const unsigned short indices[] =
+	{
+		0,1,2
 	};
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
-	D3D11_BUFFER_DESC desc = {};
-	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.CPUAccessFlags = 0u;
-	desc.MiscFlags = 0u;
-	desc.ByteWidth = sizeof(vertices);
-	desc.StructureByteStride = sizeof(Vertex);
+	D3D11_BUFFER_DESC vertexBufferDesc = {};
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.CPUAccessFlags = 0u;
+	vertexBufferDesc.MiscFlags = 0u;
+	vertexBufferDesc.ByteWidth = sizeof(vertices);
+	vertexBufferDesc.StructureByteStride = sizeof(Vertex);
 	
 	D3D11_SUBRESOURCE_DATA sd = {};
 	sd.pSysMem = vertices;
 
-	pDevice->CreateBuffer(&desc, &sd, &pVertexBuffer);
+	pDevice->CreateBuffer(&vertexBufferDesc, &sd, &pVertexBuffer);
 	const UINT stride = sizeof(Vertex);
 	const UINT offset = 0u;
 	pContext->IASetVertexBuffers(0u,1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 
 
+	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
+	D3D11_BUFFER_DESC indexBufferDesc = {};
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.CPUAccessFlags = 0u;
+	indexBufferDesc.MiscFlags = 0u;
+	indexBufferDesc.ByteWidth = sizeof(indices);
+	indexBufferDesc.StructureByteStride = sizeof(unsigned short);
+	D3D11_SUBRESOURCE_DATA isd = {};
+	isd.pSysMem = indices;
+	pDevice->CreateBuffer(&indexBufferDesc, &isd, &indexBuffer);
+
+	pContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+	struct ConstantBuffer
+	{
+		struct 
+		{
+			float element[4][4];
+		}transformation;
+	};
+
+	const ConstantBuffer constantBufferData =
+	{
+		{
+			0.5625f * std::cos(angle), std::sin(angle),0.0f,0.0f,
+			0.5625f  * -std::sin(angle), std::cos(angle),0.0f,0.0f,
+			0.0,0.0f,1.0f,0.0f,
+			0.0f,0.0f,0.0f,1.0f
+		}
+	};
+
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
+	D3D11_BUFFER_DESC constantBufferDesc = {};
+	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	constantBufferDesc.MiscFlags = 0u;
+	constantBufferDesc.ByteWidth = sizeof(constantBufferData);
+	constantBufferDesc.StructureByteStride = 0u;
+	D3D11_SUBRESOURCE_DATA csd = {};
+	csd.pSysMem = &constantBufferData;
+	pDevice->CreateBuffer(&constantBufferDesc, &csd, &constantBuffer);
+
+	pContext->VSSetConstantBuffers(0u, 1u, constantBuffer.GetAddressOf());
 
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
 	Microsoft::WRL::ComPtr<ID3DBlob> blob;
@@ -114,6 +181,7 @@ void Graphics::DrawTriangle()
 	const D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
 		{"POSITION",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"COLOUR",0,DXGI_FORMAT_R8G8B8A8_UNORM,0,8u,D3D11_INPUT_PER_VERTEX_DATA,0},
 	};
 
 	pDevice->CreateInputLayout(inputDesc, (UINT)std::size(inputDesc), blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
@@ -138,5 +206,6 @@ void Graphics::DrawTriangle()
 	viewport.TopLeftY = 0;
 	pContext->RSSetViewports(1u, &viewport);
 
-	pContext->Draw(std::size(vertices), 0u);
+	//pContext->Draw(std::size(vertices), 0u);
+	pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u);
 }

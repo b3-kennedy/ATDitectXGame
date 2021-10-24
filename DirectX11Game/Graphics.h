@@ -18,7 +18,7 @@ public:
 		const float colour[] = { r,g,b,1.0f };
 		pContext->ClearRenderTargetView(pTarget.Get(), colour);
 	}
-	void DrawTriangle();
+	void DrawTriangle(float angle);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
