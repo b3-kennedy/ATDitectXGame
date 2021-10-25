@@ -22,7 +22,7 @@ Graphics::Graphics(HWND hWnd)
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = 1;
 	sd.OutputWindow = hWnd;
-	sd.Windowed = FALSE;
+	sd.Windowed = TRUE;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = 0;
 
@@ -62,7 +62,7 @@ void Graphics::EndFrame()
 	pSwap->Present(1u, 0u);
 }
 
-void Graphics::DrawTriangle(float angle)
+void Graphics::DrawTriangle(float angle, float x, float y)
 {
 	
 
@@ -72,6 +72,7 @@ void Graphics::DrawTriangle(float angle)
 		{
 			float x;
 			float y;
+			float z;
 		}pos;
 		struct 
 		{
@@ -84,18 +85,28 @@ void Graphics::DrawTriangle(float angle)
 
 	const Vertex vertices[] =
 	{
-		{0.0f,0.5f,255,0,0,0},
-		{0.5f,-0.5f,0.0f,255,0,0},
-		{-0.5f,-0.5f,0.0f,0,255,0},
+		{-1.0f,-1.0f,-1.0f, 255, 0, 0},
+		{1.0f,-1.0f,-1.0f, 0, 255, 0},
+		{-1.0f,1.0f,-1.0f, 0, 0, 255},
+		{1.0f,1.0f,-1.0f, 255,255,0},
+		{-1.0f,-1.0f,1.0f, 255, 0, 255},
+		{1.0f,-1.0f,1.0f, 0, 255, 255},
+		{-1.0f,1.0f,1.0f, 0,0,0},
+		{1.0f,1.0f,1.0f, 255, 255, 255}
 
-		//{0.5f,1.0f},
-		//{1.0f,0.5f},
-		//{0.5f,0.5f},
+		//{0.0f,0.5f,255,0,0,0},
+		//{0.5f,-0.5f,0.0f,255,0,0},
+		//{-0.5f,-0.5f,0.0f,0,255,0},
 	};
 
 	const unsigned short indices[] =
 	{
-		0,1,2
+		0,2,1, 2,3,1,
+		1,3,5, 3,7,5,
+		2,6,3, 3,6,7,
+		4,5,7, 4,7,6,
+		0,4,2, 2,4,6,
+		0,1,4, 1,5,4
 	};
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
@@ -132,19 +143,14 @@ void Graphics::DrawTriangle(float angle)
 
 	struct ConstantBuffer
 	{
-		struct 
-		{
-			float element[4][4];
-		}transformation;
+		DirectX::XMMATRIX transform;
 	};
 
 	const ConstantBuffer constantBufferData =
 	{
 		{
-			0.5625f * std::cos(angle), std::sin(angle),0.0f,0.0f,
-			0.5625f  * -std::sin(angle), std::cos(angle),0.0f,0.0f,
-			0.0,0.0f,1.0f,0.0f,
-			0.0f,0.0f,0.0f,1.0f
+			DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationZ(angle)* DirectX::XMMatrixRotationX(angle)* DirectX::XMMatrixTranslation(x,y,4.0f) * DirectX::XMMatrixPerspectiveLH(1.0f,0.5625f,0.5f,10.0f))
+			
 		}
 	};
 
@@ -180,8 +186,8 @@ void Graphics::DrawTriangle(float angle)
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 	const D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
-		{"POSITION",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOUR",0,DXGI_FORMAT_R8G8B8A8_UNORM,0,8u,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"COLOUR",0,DXGI_FORMAT_R8G8B8A8_UNORM,0,12u,D3D11_INPUT_PER_VERTEX_DATA,0},
 	};
 
 	pDevice->CreateInputLayout(inputDesc, (UINT)std::size(inputDesc), blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
