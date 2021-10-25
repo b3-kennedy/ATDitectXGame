@@ -10,8 +10,8 @@
 Graphics::Graphics(HWND hWnd)
 {
 	DXGI_SWAP_CHAIN_DESC sd = {};
-	sd.BufferDesc.Width = 0;
-	sd.BufferDesc.Height = 0;
+	sd.BufferDesc.Width = 1920;
+	sd.BufferDesc.Height = 1080;
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	sd.BufferDesc.RefreshRate.Numerator = 0;
 	sd.BufferDesc.RefreshRate.Denominator = 0;
@@ -34,7 +34,38 @@ Graphics::Graphics(HWND hWnd)
 	pSwap->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer);
 	pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pTarget);
 
-	pBackBuffer->Release();
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+	depthStencilDesc.DepthEnable = TRUE;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> stencilState;
+	pDevice->CreateDepthStencilState(&depthStencilDesc, &stencilState);
+
+	pContext->OMSetDepthStencilState(stencilState.Get(), 1u);
+
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencil;
+	D3D11_TEXTURE2D_DESC depthDesc = {};
+	depthDesc.Width = 1920u;
+	depthDesc.Height = 1080u;
+	depthDesc.MipLevels = 1u;
+	depthDesc.ArraySize = 1u;
+	depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthDesc.SampleDesc.Count = 1u;
+	depthDesc.SampleDesc.Quality = 0u;
+	depthDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	pDevice->CreateTexture2D(&depthDesc, nullptr, &depthStencil);
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0u;
+
+	pDevice->CreateDepthStencilView(depthStencil.Get(), &descDSV, &pDSV);
+
+	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSV.Get());
+
 }
 
 //Graphics::~Graphics()
@@ -62,7 +93,14 @@ void Graphics::EndFrame()
 	pSwap->Present(1u, 0u);
 }
 
-void Graphics::DrawTriangle(float angle, float x, float y)
+void Graphics::ClearBuffer(float r, float g, float b) noexcept
+{
+	const float colour[] = { r,g,b,1.0f };
+	pContext->ClearRenderTargetView(pTarget.Get(), colour);
+	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+}
+
+void Graphics::DrawTriangle(float angle, float x, float z)
 {
 	
 
@@ -74,29 +112,18 @@ void Graphics::DrawTriangle(float angle, float x, float y)
 			float y;
 			float z;
 		}pos;
-		struct 
-		{
-			unsigned char r;
-			unsigned char g;
-			unsigned char b;
-			unsigned char a;
-		}colour;
 	};
 
 	const Vertex vertices[] =
 	{
-		{-1.0f,-1.0f,-1.0f, 255, 0, 0},
-		{1.0f,-1.0f,-1.0f, 0, 255, 0},
-		{-1.0f,1.0f,-1.0f, 0, 0, 255},
-		{1.0f,1.0f,-1.0f, 255,255,0},
-		{-1.0f,-1.0f,1.0f, 255, 0, 255},
-		{1.0f,-1.0f,1.0f, 0, 255, 255},
-		{-1.0f,1.0f,1.0f, 0,0,0},
-		{1.0f,1.0f,1.0f, 255, 255, 255}
-
-		//{0.0f,0.5f,255,0,0,0},
-		//{0.5f,-0.5f,0.0f,255,0,0},
-		//{-0.5f,-0.5f,0.0f,0,255,0},
+		{-1.0f,-1.0f,-1.0f},
+		{1.0f,-1.0f,-1.0f},
+		{-1.0f,1.0f,-1.0f},
+		{1.0f,1.0f,-1.0f},
+		{-1.0f,-1.0f,1.0f},
+		{1.0f,-1.0f,1.0f},
+		{-1.0f,1.0f,1.0f},
+		{1.0f,1.0f,1.0f}
 	};
 
 	const unsigned short indices[] =
@@ -149,7 +176,7 @@ void Graphics::DrawTriangle(float angle, float x, float y)
 	const ConstantBuffer constantBufferData =
 	{
 		{
-			DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationZ(angle)* DirectX::XMMatrixRotationX(angle)* DirectX::XMMatrixTranslation(x,y,4.0f) * DirectX::XMMatrixPerspectiveLH(1.0f,0.5625f,0.5f,10.0f))
+			DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationZ(angle)* DirectX::XMMatrixRotationX(angle)* DirectX::XMMatrixTranslation(x,0.0f,z+4.0f) * DirectX::XMMatrixPerspectiveLH(1.0f,0.5625f,0.5f,10.0f))
 			
 		}
 	};
@@ -169,6 +196,45 @@ void Graphics::DrawTriangle(float angle, float x, float y)
 
 	pContext->VSSetConstantBuffers(0u, 1u, constantBuffer.GetAddressOf());
 
+
+	struct ConstantBuffer2
+	{
+		struct
+		{
+			float r;
+			float g;
+			float b;
+			float a;
+		}face_colours[6];
+	};
+
+	const ConstantBuffer2 buffer2 =
+	{
+		{
+			{1.0f,0.0f,1.0f},
+			{1.0f,0.0f,0.0f},
+			{0.0f, 1.0f, 0.0f},
+			{0.0f,0.0f,1.0f},
+			{1.0f,1.0f,0.0f},
+			{0.0f,1.0f,1.0f},
+		}
+	};
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer2;
+	D3D11_BUFFER_DESC constantBuffer2Desc = {};
+	constantBuffer2Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constantBuffer2Desc.Usage = D3D11_USAGE_DYNAMIC;
+	constantBuffer2Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	constantBuffer2Desc.MiscFlags = 0u;
+	constantBuffer2Desc.ByteWidth = sizeof(buffer2);
+	constantBuffer2Desc.StructureByteStride = 0u;
+	D3D11_SUBRESOURCE_DATA csd2 = {};
+	csd2.pSysMem = &buffer2;
+	pDevice->CreateBuffer(&constantBuffer2Desc, &csd2, &constantBuffer2);
+
+	pContext->PSSetConstantBuffers(0u, 1u, constantBuffer2.GetAddressOf());
+
+
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
 	Microsoft::WRL::ComPtr<ID3DBlob> blob;
 	D3DReadFileToBlob(L"PixelShader.cso", &blob);
@@ -186,20 +252,17 @@ void Graphics::DrawTriangle(float angle, float x, float y)
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 	const D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
-		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOUR",0,DXGI_FORMAT_R8G8B8A8_UNORM,0,12u,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
 
 	pDevice->CreateInputLayout(inputDesc, (UINT)std::size(inputDesc), blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
 
 	pContext->IASetInputLayout(inputLayout.Get());
 
-	
-
 
 	
 
-	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
+	//pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
 
 	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
