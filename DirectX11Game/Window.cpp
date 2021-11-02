@@ -161,10 +161,6 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         const POINTS pt = MAKEPOINTS(lParam);
         if(pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height)
         {
-            mouse.OnMouseMove(pt.x, pt.y);
-            std::ostringstream stream;
-            stream << "( " << pt.x << "," << pt.y << ")";
-            SetTitle(stream.str());
             if(!mouse.IsInWindow())
             {
                 SetCapture(hWnd);
