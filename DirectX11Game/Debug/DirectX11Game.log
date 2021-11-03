@@ -1,4 +1,2 @@
-﻿  LevelLoader.cpp
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\LevelLoader.cpp(31,53): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\LevelLoader.cpp(31,37): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
+﻿  Camera.cpp
   DirectX11Game.vcxproj -> C:\Users\Ben\source\repos\ATDirectX\Debug\DirectX11Game.exe

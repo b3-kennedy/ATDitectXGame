@@ -106,12 +106,12 @@ Cube::Cube(Graphics& gfx,
 
 void Cube::Update(float dt) noexcept
 {
-	roll += deltaRoll * dt;
-	pitch += deltaPitch * dt;
-	yaw += deltaYaw * dt;
-	theta += deltaTheta * dt;
-	phi += deltaPhi * dt;
-	chi += deltaChi * dt;
+	//roll += deltaRoll * dt;
+	//pitch += deltaPitch * dt;
+	//yaw += deltaYaw * dt;
+	//theta += deltaTheta * dt;
+	//phi += deltaPhi * dt;
+	//chi += deltaChi * dt;
 	
 
 	
@@ -120,12 +120,12 @@ void Cube::Update(float dt) noexcept
 
 DirectX::XMMATRIX Cube::GetTransformMatrix() const noexcept
 {
-	/*return DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-		DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
-		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
-		DirectX::XMMatrixTranslation(0.0f, 0.0f, 20.0f);*/
+	return DirectX::XMMatrixRotationRollPitchYaw(0.0f, 0.0f, 0.0f) *
+		DirectX::XMMatrixTranslation(0, 0.0f, 0.0f) *
+		DirectX::XMMatrixRotationRollPitchYaw(0.0f, 0.0f, 0.0f) *
+		DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
-	return DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+	//return DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 }
 
 void Cube::SetPosition(float x, float y, float z)

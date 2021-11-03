@@ -26,7 +26,7 @@ bool LevelLoader::ConstructLevel(Cube* cube)
     {
         for (size_t i = 0; i < elem.second.size(); i++)
         {
-            if(elem.second[i] == '#' && elem.first != 99)
+            if(elem.second[i] == '#')
             {
                 cube->SetPosition(i * 2, elem.first * 2, 20);
                 elem.second[i] = ' ';

@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Timer.h"
 #include "LevelLoader.h"
+#include "Camera.h"
 
 class App
 {
@@ -17,5 +18,6 @@ private:
 	std::vector<std::unique_ptr<class Cube>> cubes;
 	std::unique_ptr<class Cube> singleCube;
 	LevelLoader levelLoader;
+	Camera cam;
 };
 
