@@ -65,7 +65,38 @@ void App::DoFrame()
     auto deltaTime = timer.Mark();
     window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
     window.getGfx().SetCamera(cam.GetMatrix());
-    cam.ChangeZ(deltaTime);
+    
+    if(window.keyboard.KeyIsPressed('W'))
+    {
+        cam.ChangePosition(0.0f,deltaTime * 5,0.0f);
+    }
+
+    if(window.keyboard.KeyIsPressed('S'))
+    {
+        cam.ChangePosition(0.0f, -deltaTime * 5, 0.0f);
+    }
+
+    if (window.keyboard.KeyIsPressed('A'))
+    {
+        cam.ChangePosition(-deltaTime * 5, 0.0f, 0.0f);
+    }
+
+    if (window.keyboard.KeyIsPressed('D'))
+    {
+        cam.ChangePosition(deltaTime * 5, 0.0f, 0.0f);
+    }
+
+    if (window.keyboard.KeyIsPressed(VK_SPACE))
+    {
+        cam.ChangePosition(0.0f, 0.0f, deltaTime * 5);
+    }
+
+    if (window.keyboard.KeyIsPressed(VK_CONTROL))
+    {
+        cam.ChangePosition(0.0f, 0.0f, -deltaTime * 5);
+    }
+
+
     for (size_t i = 0; i < 200; i++)
     {
         cubes[i]->Update(deltaTime);
