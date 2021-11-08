@@ -28,11 +28,18 @@ bool LevelLoader::ConstructLevel(Cube* cube)
         {
             if(elem.second[i] == '#')
             {
-                cube->SetPosition(i * 2, elem.first * 2, 20);
+                cube->SetPosition(i * 2, -10.0f, elem.first * 2);
                 elem.second[i] = ' ';
                 return true;
-
+                
             }
+            if(elem.second[i] == '/')
+            {
+                cube->SetPosition(i * 2, -20.0f, elem.first * 2);
+                elem.second[i] = ' ';
+                return true;
+            }
+            
         }
         
 

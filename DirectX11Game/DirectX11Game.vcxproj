@@ -186,6 +186,7 @@
     <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="RawDelta.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransformBuffer.h" />
@@ -217,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="TestLevel.txt" />
+    <Text Include="Testlevel2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

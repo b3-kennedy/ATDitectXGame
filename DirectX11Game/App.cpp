@@ -9,7 +9,7 @@ App::App() : window(1920, 1080, "DirectX Game")
     std::uniform_real_distribution<float> ddist(0.0f, 3.1415f * 2.0f);
     std::uniform_real_distribution<float> odist(0.0f, 3.1415f * 0.3f);
     std::uniform_real_distribution<float> rdist(6.0f, 20.0f);
-    for (auto i = 0; i < 200; i++)
+    for (auto i = 0; i < NUMBER_OF_CUBES; i++)
     {
         cubes.push_back(std::make_unique<Cube>(
             window.getGfx(), rng, adist,
@@ -18,25 +18,20 @@ App::App() : window(1920, 1080, "DirectX Game")
     }
     singleCube = std::make_unique<Cube>(window.getGfx(), rng, adist, ddist, odist, rdist);
 
-    window.getGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(5, 3840.0f/2160.0f, 0.5f, 100.0f));
+    window.getGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 1.0f, 0.5f, 100.0f));
 
     levelLoader.ReadFile("TestLevel.txt");
 
     
-        //for (size_t i = 0; i < 11; i++)
-        //{
-        //    if (levelLoader.ConstructLevel(cubes[i].get()))
-        //    {
-        //        window.SetTitle("Level read");
-        //    }
-        //}
-    for (size_t i = 0; i < 200; i++)
+    for (size_t i = 0; i < NUMBER_OF_CUBES; i++)
     {
         if (levelLoader.ConstructLevel(cubes[i].get()))
         {
             window.SetTitle("Level read");
         }
     }
+
+    cam.SetPosition(5.0f, 5.0f, 5.0f);
 
 
 
@@ -48,11 +43,14 @@ int App::Go()
     
     while(true)
     {
+        //window.DisableCursor();
         if(const auto code = Window::ProcessMessages())
         {
             return *code;
         }
-        DoFrame();
+        auto deltaTime = timer.Mark();
+        Input(deltaTime);
+        DoFrame(deltaTime);
     }
 }
 
@@ -60,50 +58,72 @@ App::~App()
 {
 }
 
-void App::DoFrame() 
+void App::DoFrame(float deltaTime) 
 {
-    auto deltaTime = timer.Mark();
-    window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
-    window.getGfx().SetCamera(cam.GetMatrix());
     
-    if(window.keyboard.KeyIsPressed('W'))
-    {
-        cam.ChangePosition(0.0f,deltaTime * 5,0.0f);
-    }
-
-    if(window.keyboard.KeyIsPressed('S'))
-    {
-        cam.ChangePosition(0.0f, -deltaTime * 5, 0.0f);
-    }
-
-    if (window.keyboard.KeyIsPressed('A'))
-    {
-        cam.ChangePosition(-deltaTime * 5, 0.0f, 0.0f);
-    }
-
-    if (window.keyboard.KeyIsPressed('D'))
-    {
-        cam.ChangePosition(deltaTime * 5, 0.0f, 0.0f);
-    }
-
-    if (window.keyboard.KeyIsPressed(VK_SPACE))
-    {
-        cam.ChangePosition(0.0f, 0.0f, deltaTime * 5);
-    }
-
-    if (window.keyboard.KeyIsPressed(VK_CONTROL))
-    {
-        cam.ChangePosition(0.0f, 0.0f, -deltaTime * 5);
-    }
-
-
-    for (size_t i = 0; i < 200; i++)
+    window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
+    
+    for (size_t i = 0; i < NUMBER_OF_CUBES; i++)
     {
         cubes[i]->Update(deltaTime);
         cubes[i]->Draw(window.getGfx());
+        if (cubes[i]->OnCollision(cam))
+        {
+            window.SetTitle(std::to_string(i));
+            cam.IsColliding(true);
+        }
+        //else
+        //{
+        //    cam.IsColliding(false);
+        //}
     }
+
+    window.getGfx().SetCamera(cam.GetMatrix());
+
+
+
+
     
 
     window.getGfx().EndFrame();
 
+}
+
+void App::Input(float deltaTime)
+{
+
+    if (window.keyboard.KeyIsPressed('W'))
+    {
+        cam.Translate({ 0.0f, 0.0f,deltaTime });
+    }
+
+    if (window.keyboard.KeyIsPressed('S'))
+    {
+        cam.Translate({ 0.0f, 0.0f, -deltaTime });
+    }
+
+    if (window.keyboard.KeyIsPressed('A'))
+    {
+        cam.Translate({ -deltaTime, 0.0f, 0.0f });
+    }
+
+    if (window.keyboard.KeyIsPressed('D'))
+    {
+        cam.Translate({ deltaTime, 0.0f, 0.0f });
+    }
+
+    if (window.keyboard.KeyIsPressed(VK_SPACE))
+    {
+        cam.Translate({ 0.0f, deltaTime, 0.0f});
+    }
+
+    if (window.keyboard.KeyIsPressed(VK_CONTROL))
+    {
+        cam.Translate({ 0.0f, -deltaTime, 0.0f});
+    }
+
+    while(const auto delta = window.mouse.ReadRawDelta())
+    {
+        cam.Rotate(delta->x, delta->y);
+    }
 }

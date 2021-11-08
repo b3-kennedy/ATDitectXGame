@@ -39,14 +39,14 @@ Cube::Cube(Graphics& gfx,
 	};
 	const std::vector<Vertex> vertices =
 	{
-		{ -1.0f,-1.0f,-1.0f },
-		{ 1.0f,-1.0f,-1.0f },
-		{ -1.0f,1.0f,-1.0f },
-		{ 1.0f,1.0f,-1.0f },
-		{ -1.0f,-1.0f,1.0f },
-		{ 1.0f,-1.0f,1.0f },
-		{ -1.0f,1.0f,1.0f },
-		{ 1.0f,1.0f,1.0f },
+		{ -1.0f,-10.0f,-1.0f },
+		{ 1.0f,-10.0f,-1.0f },
+		{ -1.0f,10.0f,-1.0f },
+		{ 1.0f,10.0f,-1.0f },
+		{ -1.0f,-10.0f,1.0f },
+		{ 1.0f,-10.0f,1.0f },
+		{ -1.0f,10.0f,1.0f },
+		{ 1.0f,10.0f,1.0f },
 	};
 	AddBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
@@ -133,6 +133,17 @@ void Cube::SetPosition(float x, float y, float z)
 	position.x = x;
 	position.y = y;
 	position.z = z;
+}
+
+bool Cube::OnCollision(Camera cam)
+{
+	if((cam.GetPosition().x >= this->GetPosition().x-1.8f && cam.GetPosition().x <= this->GetPosition().x + 1.8f)
+		&& (cam.GetPosition().z >= this->GetPosition().z- 1.8f && cam.GetPosition().z <= this->GetPosition().z + 1.8f)
+		&& (cam.GetPosition().z >= this->GetPosition().y- 1.8f && cam.GetPosition().y <= this->GetPosition().y + 10.0f))
+	{
+		return true;
+	}
+	return false;
 }
 
 Vector3 Cube::GetPosition()

@@ -2,6 +2,7 @@
 #include "Drawable.h"
 #include "Vector3.h"
 #include <random>
+#include "Camera.h"
 
 class Cube : public Drawable
 {
@@ -14,6 +15,7 @@ public:
 	void Update(float dt) noexcept override;
 	DirectX::XMMATRIX GetTransformMatrix() const noexcept override;
 	void SetPosition(float x, float y, float z);
+	bool OnCollision(Camera cam);
 	Vector3 GetPosition();
 private:
 

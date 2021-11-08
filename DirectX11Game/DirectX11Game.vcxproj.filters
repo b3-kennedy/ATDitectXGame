@@ -152,6 +152,9 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RawDelta.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -163,6 +166,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="TestLevel.txt">
+      <Filter>Header Files\Levels</Filter>
+    </Text>
+    <Text Include="Testlevel2.txt">
       <Filter>Header Files\Levels</Filter>
     </Text>
   </ItemGroup>

@@ -1,5 +1,7 @@
 #pragma once
 #include <queue>
+#include <optional>
+#include "RawDelta.h"
 
 
 class Mouse
@@ -67,6 +69,7 @@ public:
 	Mouse(const Mouse&) = delete;
 	Mouse& operator=(const Mouse&) = delete;
 	std::pair<int, int> GetPos() const noexcept;
+	std::optional<RawDelta> ReadRawDelta() noexcept;
 	int GetPosX() const noexcept;
 	int GetPosY() const noexcept;
 	bool IsInWindow() const noexcept;
@@ -82,6 +85,7 @@ private:
 	void OnMouseLeave() noexcept;
 	void OnMouseEnter() noexcept;
 	void OnMouseMove(int x, int y) noexcept;
+	void OnRawDelta(int deltaX, int deltaY) noexcept;
 	void OnLeftPressed(int x, int y) noexcept;
 	void OnLeftReleased(int x, int y) noexcept;
 	void OnRightPressed(int x, int y) noexcept;
@@ -89,6 +93,7 @@ private:
 	void OnWheelUp(int x, int y) noexcept;
 	void OnWheelDown(int x, int y) noexcept;
 	void TrimBuffer() noexcept;
+	void TrimRawInputBuffer() noexcept;
 	void OnWheelDelta(int x, int y, int delta) noexcept;
 private:
 	static constexpr unsigned int bufferSize = 16u;
@@ -98,5 +103,6 @@ private:
 	bool rightButtonPressed = false;
 	bool inWindow = false;
 	int wheelDelta = 0;
+	std::queue<RawDelta> rawDeltaBuffer;
 	std::queue<Event> buffer;
 };

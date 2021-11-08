@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include "LevelLoader.h"
 #include "Camera.h"
+#include "RawDelta.h"
 
 class App
 {
@@ -11,7 +12,8 @@ public:
 	int Go();
 	~App();
 private:
-	void DoFrame();
+	void DoFrame(float deltaTime);
+	void Input(float deltaTime);
 private:
 	Window window;
 	Timer timer;
@@ -19,5 +21,6 @@ private:
 	std::unique_ptr<class Cube> singleCube;
 	LevelLoader levelLoader;
 	Camera cam;
+	const int NUMBER_OF_CUBES = 5;
 };
 
