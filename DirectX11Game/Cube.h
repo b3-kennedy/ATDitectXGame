@@ -3,9 +3,11 @@
 #include "Vector3.h"
 #include <random>
 #include "Camera.h"
+#include "Vertex.h"
 
 class Cube : public Drawable
 {
+
 public:
 	Cube(Graphics& gfx, std::mt19937& rng,
 		std::uniform_real_distribution<float>& adist,
@@ -15,7 +17,7 @@ public:
 	void Update(float dt) noexcept override;
 	DirectX::XMMATRIX GetTransformMatrix() const noexcept override;
 	void SetPosition(float x, float y, float z);
-	bool OnCollision(Camera cam);
+	bool OnCollision(Camera* cam);
 	Vector3 GetPosition();
 private:
 
@@ -34,4 +36,16 @@ private:
 	float deltaPhi;
 	float deltaChi;
 	float move;
+
+	const std::vector<Vertex> vertices =
+	{
+		{ -1.0f,-10.0f,-1.0f },
+		{ 1.0f,-10.0f,-1.0f },
+		{ -1.0f,10.0f,-1.0f },
+		{ 1.0f,10.0f,-1.0f },
+		{ -1.0f,-10.0f,1.0f },
+		{ 1.0f,-10.0f,1.0f },
+		{ -1.0f,10.0f,1.0f },
+		{ 1.0f,10.0f,1.0f },
+	};
 };

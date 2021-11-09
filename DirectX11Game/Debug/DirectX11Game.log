@@ -1,6 +1,6 @@
 ﻿  App.cpp
 C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(26,26): warning C4018: '<': signed/unsigned mismatch
 C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(66,26): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(127,35): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(127,25): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(133,36): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(133,26): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
   DirectX11Game.vcxproj -> C:\Users\Ben\source\repos\ATDirectX\Debug\DirectX11Game.exe

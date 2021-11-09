@@ -20,7 +20,8 @@ private:
 	std::vector<std::unique_ptr<class Cube>> cubes;
 	std::unique_ptr<class Cube> singleCube;
 	LevelLoader levelLoader;
-	Camera cam;
-	const int NUMBER_OF_CUBES = 5;
+	std::unique_ptr<Camera> cam = std::make_unique<Camera>();
+	const int NUMBER_OF_CUBES = 500;
+	bool canInput = true;
 };
 

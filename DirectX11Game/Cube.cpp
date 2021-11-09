@@ -28,26 +28,6 @@ Cube::Cube(Graphics& gfx,
 	theta(adist(rng)),
 	phi(adist(rng))
 {
-	struct Vertex
-	{
-		struct
-		{
-			float x;
-			float y;
-			float z;
-		} pos;
-	};
-	const std::vector<Vertex> vertices =
-	{
-		{ -1.0f,-10.0f,-1.0f },
-		{ 1.0f,-10.0f,-1.0f },
-		{ -1.0f,10.0f,-1.0f },
-		{ 1.0f,10.0f,-1.0f },
-		{ -1.0f,-10.0f,1.0f },
-		{ 1.0f,-10.0f,1.0f },
-		{ -1.0f,10.0f,1.0f },
-		{ 1.0f,10.0f,1.0f },
-	};
 	AddBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
 	auto pvs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
@@ -135,13 +115,17 @@ void Cube::SetPosition(float x, float y, float z)
 	position.z = z;
 }
 
-bool Cube::OnCollision(Camera cam)
+bool Cube::OnCollision(Camera* cam)
 {
-	if((cam.GetPosition().x >= this->GetPosition().x-1.8f && cam.GetPosition().x <= this->GetPosition().x + 1.8f)
-		&& (cam.GetPosition().z >= this->GetPosition().z- 1.8f && cam.GetPosition().z <= this->GetPosition().z + 1.8f)
-		&& (cam.GetPosition().z >= this->GetPosition().y- 1.8f && cam.GetPosition().y <= this->GetPosition().y + 10.0f))
+	
+	if((cam->GetPosition().x >= this->GetPosition().x-1.8f && cam->GetPosition().x <= this->GetPosition().x + 1.8f)
+		&& (cam->GetPosition().z >= this->GetPosition().z- 1.8f && cam->GetPosition().z <= this->GetPosition().z + 1.8f)
+		&& (cam->GetPosition().z >= this->GetPosition().y && cam->GetPosition().y <= this->GetPosition().y + 10.0f))
 	{
+		cam->prevPosition = { cam->GetPosition().x,cam->GetPosition().y,cam->GetPosition().z };
 		return true;
+
+		
 	}
 	return false;
 }

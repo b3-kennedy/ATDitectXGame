@@ -2,7 +2,7 @@
 #include "Cube.h"
 
 
-App::App() : window(1920, 1080, "DirectX Game") 
+App::App() : window(1920, 1080, "DirectX Game")
 {
     std::mt19937 rng(std::random_device{}());
     std::uniform_real_distribution<float> adist(0.0f, 3.1415f * 2.0f);
@@ -20,9 +20,9 @@ App::App() : window(1920, 1080, "DirectX Game")
 
     window.getGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 1.0f, 0.5f, 100.0f));
 
-    levelLoader.ReadFile("TestLevel.txt");
+    levelLoader.ReadFile("TestLevel2.txt");
 
-    
+
     for (size_t i = 0; i < NUMBER_OF_CUBES; i++)
     {
         if (levelLoader.ConstructLevel(cubes[i].get()))
@@ -31,7 +31,7 @@ App::App() : window(1920, 1080, "DirectX Game")
         }
     }
 
-    cam.SetPosition(5.0f, 5.0f, 5.0f);
+    cam->SetPosition(5.0f, 5.0f, 5.0f);
 
 
 
@@ -40,11 +40,11 @@ App::App() : window(1920, 1080, "DirectX Game")
 
 int App::Go()
 {
-    
-    while(true)
+
+    while (true)
     {
         //window.DisableCursor();
-        if(const auto code = Window::ProcessMessages())
+        if (const auto code = Window::ProcessMessages())
         {
             return *code;
         }
@@ -58,32 +58,36 @@ App::~App()
 {
 }
 
-void App::DoFrame(float deltaTime) 
+void App::DoFrame(float deltaTime)
 {
-    
+
     window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
-    
+    //window.SetTitle(std::to_string(cam->trans.x) + " " + std::to_string(cam->trans.y) + " " + std::to_string(cam->trans.z));
     for (size_t i = 0; i < NUMBER_OF_CUBES; i++)
     {
         cubes[i]->Update(deltaTime);
         cubes[i]->Draw(window.getGfx());
-        if (cubes[i]->OnCollision(cam))
+        if (cubes[i]->OnCollision(cam.get()))
         {
-            window.SetTitle(std::to_string(i));
-            cam.IsColliding(true);
+
+            canInput = false;
+            //cam->SetSpeed(0.0f);
+            //cam->SetPosition(cam->prevPosition.x,cam->prevPosition.y,cam->prevPosition.z);
+            cam->Translate({ -cam->trans.x * deltaTime * 30, -cam->trans.y * deltaTime * 30, -cam->trans.z * deltaTime * 30 });
         }
-        //else
-        //{
-        //    cam.IsColliding(false);
-        //}
+        else
+        {
+            //cam->SetSpeed(12.0f);
+            canInput = true;
+        }
     }
 
-    window.getGfx().SetCamera(cam.GetMatrix());
+    window.getGfx().SetCamera(cam->GetMatrix());
 
 
 
 
-    
+
 
     window.getGfx().EndFrame();
 
@@ -91,39 +95,41 @@ void App::DoFrame(float deltaTime)
 
 void App::Input(float deltaTime)
 {
-
-    if (window.keyboard.KeyIsPressed('W'))
+    if (canInput)
     {
-        cam.Translate({ 0.0f, 0.0f,deltaTime });
+        if (window.keyboard.KeyIsPressed('W'))
+        {
+            cam->Translate({ 0.0f, 0.0f,deltaTime });
+        }
+
+        if (window.keyboard.KeyIsPressed('S'))
+        {
+            cam->Translate({ 0.0f, 0.0f, -deltaTime });
+        }
+
+        if (window.keyboard.KeyIsPressed('A'))
+        {
+            cam->Translate({ -deltaTime, 0.0f, 0.0f });
+        }
+
+        if (window.keyboard.KeyIsPressed('D'))
+        {
+            cam->Translate({ deltaTime, 0.0f, 0.0f });
+        }
+
+        if (window.keyboard.KeyIsPressed(VK_SPACE))
+        {
+            cam->Translate({ 0.0f, deltaTime, 0.0f });
+        }
+
+        if (window.keyboard.KeyIsPressed(VK_CONTROL))
+        {
+            cam->Translate({ 0.0f, -deltaTime, 0.0f });
+        }
     }
 
-    if (window.keyboard.KeyIsPressed('S'))
+    while (const auto delta = window.mouse.ReadRawDelta())
     {
-        cam.Translate({ 0.0f, 0.0f, -deltaTime });
-    }
-
-    if (window.keyboard.KeyIsPressed('A'))
-    {
-        cam.Translate({ -deltaTime, 0.0f, 0.0f });
-    }
-
-    if (window.keyboard.KeyIsPressed('D'))
-    {
-        cam.Translate({ deltaTime, 0.0f, 0.0f });
-    }
-
-    if (window.keyboard.KeyIsPressed(VK_SPACE))
-    {
-        cam.Translate({ 0.0f, deltaTime, 0.0f});
-    }
-
-    if (window.keyboard.KeyIsPressed(VK_CONTROL))
-    {
-        cam.Translate({ 0.0f, -deltaTime, 0.0f});
-    }
-
-    while(const auto delta = window.mouse.ReadRawDelta())
-    {
-        cam.Rotate(delta->x, delta->y);
+        cam->Rotate(delta->x, delta->y);
     }
 }
