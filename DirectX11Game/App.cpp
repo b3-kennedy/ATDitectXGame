@@ -73,7 +73,7 @@ void App::DoFrame(float deltaTime)
             canInput = false;
             //cam->SetSpeed(0.0f);
             //cam->SetPosition(cam->prevPosition.x,cam->prevPosition.y,cam->prevPosition.z);
-            cam->Translate({ -cam->trans.x * deltaTime * 30, -cam->trans.y * deltaTime * 30, -cam->trans.z * deltaTime * 30 });
+            cam->Translate({ -cam->trans.x * deltaTime * 30, 0.0f, -cam->trans.z * deltaTime * 30 });
         }
         else
         {

@@ -118,8 +118,8 @@ void Cube::SetPosition(float x, float y, float z)
 bool Cube::OnCollision(Camera* cam)
 {
 	
-	if((cam->GetPosition().x >= this->GetPosition().x-1.8f && cam->GetPosition().x <= this->GetPosition().x + 1.8f)
-		&& (cam->GetPosition().z >= this->GetPosition().z- 1.8f && cam->GetPosition().z <= this->GetPosition().z + 1.8f)
+	if((cam->GetPosition().x >= this->GetPosition().x-2 && cam->GetPosition().x <= this->GetPosition().x + 2)
+		&& (cam->GetPosition().z >= this->GetPosition().z- 2 && cam->GetPosition().z <= this->GetPosition().z + 2)
 		&& (cam->GetPosition().z >= this->GetPosition().y && cam->GetPosition().y <= this->GetPosition().y + 10.0f))
 	{
 		cam->prevPosition = { cam->GetPosition().x,cam->GetPosition().y,cam->GetPosition().z };
