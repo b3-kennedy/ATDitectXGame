@@ -18,8 +18,12 @@ public:
 	void SetActive(bool value);
 	bool IsActive();
 	Vector3 GetPosition();
-private:
+	std::string tag;
+	void setVelocity(DirectX::XMFLOAT3 vel);
+	DirectX::XMFLOAT3 getVelocity();
 
+private:
+	DirectX::XMFLOAT3 velocity = {0.0f,0.0f,0.0f};
 	Vector3 position;
 	bool canDraw;
 	//float r;

@@ -15,11 +15,20 @@ App::App() : window(1920, 1080, "DirectX Game")
     levelLoader.ReadFile("TestLevel2.txt");
 
 
-    for (size_t i = 0; i < NUMBER_OF_CUBES; i++)
+    for (size_t i = 0; i < levelLoader.numberOfCharacters; i++)
     {
         if (levelLoader.ConstructLevel(cubes[i].get()))
         {
             window.SetTitle("Level read");
+        }
+        else
+        {
+            levelLoader.PositionEnemies(cubes[i].get(), levelLoader.index);
+            if(levelLoader.index < levelLoader.enemyPositions.size() -1)
+            {
+                levelLoader.index++;
+            }
+            
         }
     }
 
@@ -74,20 +83,25 @@ void App::DoFrame(float deltaTime)
             {
                 bullets[i]->Update(deltaTime);
                 bullets[i]->Draw(window.getGfx());
-                bullets[i]->SetPosition(bullets[i]->GetPosition().x + currentLookDir.x * deltaTime * 50, bullets[i]->GetPosition().y + currentLookDir.y * deltaTime * 50, bullets[i]->GetPosition().z+ currentLookDir.z * deltaTime * 50);
+                bullets[i]->SetPosition(bullets[i]->GetPosition().x + bullets[i]->getVelocity().x * deltaTime, bullets[i]->GetPosition().y + bullets[i]->getVelocity().y * deltaTime, 
+                    bullets[i]->GetPosition().z + bullets[i]->getVelocity().z * deltaTime);
             }
             
         }
     }
 
 
-    for (size_t i = 0; i < NUMBER_OF_CUBES; i++)
+    for (size_t i = 0; i < levelLoader.numberOfCharacters; i++)
     {
         for (auto& bullet : bullets)
         {
             if (cubes[i]->OnCollision({bullet->GetPosition().x, bullet->GetPosition().y, bullet->GetPosition().z}))
             {
-                window.SetTitle("bullet collided with wall");
+                if(cubes[i]->tag == "enemy")
+                {
+                    cubes[i]->SetActive(false);
+                }
+                //window.SetTitle("bullet collided with wall");
                 bullet->SetActive(false);
             }
         }
@@ -241,6 +255,7 @@ void App::Shoot(float deltaTime)
         bullets[bulletNum]->SetActive(true);
         currentLookDir = cam->lookDir;
         bullets[bulletNum]->SetPosition(cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z);
+        bullets[bulletNum]->setVelocity({ currentLookDir.x * 100, currentLookDir.y * 100, currentLookDir.z * 100});
         bulletNum++;
         mousePressed = true;
     }

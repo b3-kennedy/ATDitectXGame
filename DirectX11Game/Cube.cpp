@@ -176,3 +176,13 @@ Vector3 Cube::GetPosition()
 {
 	return position;
 }
+
+void Cube::setVelocity(DirectX::XMFLOAT3 vel)
+{
+	velocity = vel;
+}
+
+DirectX::XMFLOAT3 Cube::getVelocity()
+{
+	return velocity;
+}

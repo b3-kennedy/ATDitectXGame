@@ -1,6 +1,10 @@
-﻿  LevelLoader.cpp
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\LevelLoader.cpp(31,61): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\LevelLoader.cpp(31,37): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\LevelLoader.cpp(38,61): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\LevelLoader.cpp(38,37): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
+﻿  App.cpp
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(18,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(27,34): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(35,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(79,30): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(94,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(233,36): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(233,26): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
+C:\Users\Ben\source\repos\ATDirectX\DirectX11Game\App.cpp(251,22): warning C4018: '>=': signed/unsigned mismatch
   DirectX11Game.vcxproj -> C:\Users\Ben\source\repos\ATDirectX\Debug\DirectX11Game.exe

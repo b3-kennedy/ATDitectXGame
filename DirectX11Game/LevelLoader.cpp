@@ -9,6 +9,17 @@ bool LevelLoader::ReadFile(std::string path)
         std::string string;
         while(std::getline(file, string))
         {
+            for (size_t i = 0; i < string.size(); i++)
+            {
+                if (string[i] == 'X')
+                {
+                    numberOfCharacters += 2;
+                }
+                else
+                {
+                    numberOfCharacters += 1;
+                }
+            }
             fileContents = string;
             fileLines.push_back({lineNumber, string});
             lineNumber++;
@@ -41,15 +52,14 @@ bool LevelLoader::ConstructLevel(Cube* cube)
             }
             if(elem.second[i] == 'X')
             {
-                std::vector<Cube*> cubes;
-                if(cubes.size() < 2)
-                {
-                    cubes.push_back(cube);
-                }
-                else
-                {
-                    OutputDebugString("LOL");
-                }
+                enemyPositions.push_back({ (float)i * 2, -10.0f, (float)elem.first * 2 });
+                cube->SetPosition(i * 2, -20.0f, elem.first * 2);
+                elem.second[i] = ' ';
+                return true;
+            }
+            if (elem.second[i] == 'E')
+            {
+                return false;
             }
             
         }
@@ -57,4 +67,10 @@ bool LevelLoader::ConstructLevel(Cube* cube)
 
     }
     return false;
+}
+
+void LevelLoader::PositionEnemies(Cube* cube, int index)
+{
+    cube->tag = "enemy";
+    cube->SetPosition(enemyPositions[index].x, enemyPositions[index].y, enemyPositions[index].z);
 }
