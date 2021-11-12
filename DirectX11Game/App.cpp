@@ -31,7 +31,7 @@ App::App() : window(1920, 1080, "DirectX Game")
         }
     }
 
-    cam->SetPosition(5.0f, 5.0f, 5.0f);
+    cam->SetPosition(5.0f, -5.0f, 5.0f);
 
 
 
@@ -60,27 +60,60 @@ App::~App()
 
 void App::DoFrame(float deltaTime)
 {
-
+    
     window.getGfx().ClearBuffer(0.5f, 0.5f, 1);
-    //window.SetTitle(std::to_string(cam->trans.x) + " " + std::to_string(cam->trans.y) + " " + std::to_string(cam->trans.z));
+    window.SetTitle(std::to_string(cam->lookDir.x) + " " + std::to_string(cam->lookDir.y) + " " + std::to_string(cam->lookDir.z));
+    //window.SetTitle(std::to_string(vel.x) + " " + std::to_string(vel.y) + " " + std::to_string(vel.z));
+
+    //window.SetTitle(std::to_string(cam->GetPosition().x) + " " + std::to_string(cam->GetPosition().y) + " " + std::to_string(-cam->GetPosition().z));
+
+    if (cube != nullptr)
+    {
+        if (cube->OnCollisionExit(cam.get()))
+        {
+            window.SetTitle("exit");
+        }
+    }
+
+
     for (size_t i = 0; i < NUMBER_OF_CUBES; i++)
     {
         cubes[i]->Update(deltaTime);
         cubes[i]->Draw(window.getGfx());
         if (cubes[i]->OnCollision(cam.get()))
         {
+            cam->IsColliding(true);
+            
+            cam->SetSpeed(1.0f);
 
-            canInput = false;
-            //cam->SetSpeed(0.0f);
-            //cam->SetPosition(cam->prevPosition.x,cam->prevPosition.y,cam->prevPosition.z);
-            cam->Translate({ -cam->trans.x * deltaTime * 30, 0.0f, -cam->trans.z * deltaTime * 30 });
-        }
-        else
-        {
-            //cam->SetSpeed(12.0f);
-            canInput = true;
+
+
+
+
+
+
+            vel = { cam->trans.x * deltaTime * 25 ,0.0f, cam->trans.z * deltaTime * 25 };
+            if(canMove)
+            {
+                cam->SetPosition(cam->GetPosition().x - 
+                    vel.x, cam->GetPosition().y, 
+                    cam->GetPosition().z - vel.z);
+            }
+            
+            
+
+
+
+
+
+
+            
+            cube = cubes[i].get();
+            
         }
     }
+
+
 
     window.getGfx().SetCamera(cam->GetMatrix());
 
@@ -97,35 +130,80 @@ void App::Input(float deltaTime)
 {
     if (canInput)
     {
-        if (window.keyboard.KeyIsPressed('W'))
+
+
+        if (canMove)
         {
-            cam->Translate({ 0.0f, 0.0f,deltaTime });
+            if (window.keyboard.KeyIsPressed('W'))
+            {
+                cam->Translate({ 0.0f, 0.0f,deltaTime });
+            }
+
+            if (window.keyboard.KeyIsPressed('S'))
+            {
+                cam->Translate({ 0.0f, 0.0f, -deltaTime });
+            }
+
+            if (window.keyboard.KeyIsPressed('A'))
+            {
+                cam->Translate({ -deltaTime, 0.0f, 0.0f });
+            }
+
+            if (window.keyboard.KeyIsPressed('D'))
+            {
+                cam->Translate({ deltaTime, 0.0f, 0.0f });
+            }
+
+            if (window.keyboard.KeyIsPressed(VK_SPACE))
+            {
+                cam->Translate({ 0.0f, deltaTime, 0.0f });
+            }
+
+            if (window.keyboard.KeyIsPressed(VK_CONTROL))
+            {
+                cam->Translate({ 0.0f, -deltaTime, 0.0f });
+            }
         }
 
-        if (window.keyboard.KeyIsPressed('S'))
-        {
-            cam->Translate({ 0.0f, 0.0f, -deltaTime });
-        }
 
-        if (window.keyboard.KeyIsPressed('A'))
-        {
-            cam->Translate({ -deltaTime, 0.0f, 0.0f });
-        }
+        //if((cam->lookDir.x > 0.8f || cam->lookDir.x < -0.8f) || (cam->lookDir.z > 0.8f || cam->lookDir.z < -0.8f))
+        //{
+        //    window.SetTitle("test");
+        //    if (window.keyboard.KeyIsPressed('W') && window.keyboard.KeyIsPressed('A') && cam->Colliding())
+        //    {
+        //        canMove = false;
+        //        cam->trans = { 0.0f,0.0f,0.0f };
+        //        vel = { 0.0f,0.0f,0.0f };
+        //    }
+        //    else if (window.keyboard.KeyIsPressed('W') && window.keyboard.KeyIsPressed('D') && cam->Colliding())
+        //    {
+        //        canMove = false;
+        //        window.SetTitle("yo");
+        //        cam->trans = { 0.0f,0.0f,0.0f };
+        //        vel = { 0.0f,0.0f,0.0f };
 
-        if (window.keyboard.KeyIsPressed('D'))
-        {
-            cam->Translate({ deltaTime, 0.0f, 0.0f });
-        }
+        //    }
+        //    else if (window.keyboard.KeyIsPressed('S') && window.keyboard.KeyIsPressed('A') && cam->Colliding())
+        //    {
+        //        canMove = false;
+        //        window.SetTitle("yo");
+        //        cam->trans = { 0.0f,0.0f,0.0f };
+        //        vel = { 0.0f,0.0f,0.0f };
+        //    }
+        //    else if (window.keyboard.KeyIsPressed('S') && window.keyboard.KeyIsPressed('D') && cam->Colliding())
+        //    {
+        //        canMove = false;
+        //        window.SetTitle("yo");
+        //        cam->trans = { 0.0f,0.0f,0.0f };
+        //        vel = { 0.0f,0.0f,0.0f };
+        //    }
+        //    else
+        //    {
+        //        canMove = true;
+        //    }
+        //}
 
-        if (window.keyboard.KeyIsPressed(VK_SPACE))
-        {
-            cam->Translate({ 0.0f, deltaTime, 0.0f });
-        }
 
-        if (window.keyboard.KeyIsPressed(VK_CONTROL))
-        {
-            cam->Translate({ 0.0f, -deltaTime, 0.0f });
-        }
     }
 
     while (const auto delta = window.mouse.ReadRawDelta())

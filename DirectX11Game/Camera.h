@@ -8,7 +8,7 @@
 class Camera
 {
 public:
-	DirectX::XMMATRIX GetMatrix() const noexcept;
+	DirectX::XMMATRIX GetMatrix() noexcept;
 	void Reset() noexcept;
 	void Rotate(float deltaX, float deltaY) noexcept;
 	DirectX::XMFLOAT3 GetPosition() noexcept;
@@ -19,12 +19,13 @@ public:
 	float GetSpeed();
 	void Translate(DirectX::XMFLOAT3 translation) noexcept;
 	DirectX::XMFLOAT3 trans;
-	DirectX::XMFLOAT3 prevPosition = {0.0f,0.0f,0.0f};
+	DirectX::XMFLOAT3 lookDir;
+	
 private:
 	DirectX::XMFLOAT3 position = {0.0f,0.0f,0.0f};
 	float pitch;
 	float yaw;
-	float moveSpeed = 12.0f;
+	float moveSpeed = 6.0f;
 	bool colliding = false;
 	
 	static constexpr float rotSpeed = 0.004f;

@@ -18,6 +18,7 @@ public:
 	DirectX::XMMATRIX GetTransformMatrix() const noexcept override;
 	void SetPosition(float x, float y, float z);
 	bool OnCollision(Camera* cam);
+	bool OnCollisionExit(Camera* cam);
 	Vector3 GetPosition();
 private:
 
@@ -36,6 +37,8 @@ private:
 	float deltaPhi;
 	float deltaChi;
 	float move;
+
+
 
 	const std::vector<Vertex> vertices =
 	{

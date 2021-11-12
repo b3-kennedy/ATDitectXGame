@@ -115,18 +115,51 @@ void Cube::SetPosition(float x, float y, float z)
 	position.z = z;
 }
 
-bool Cube::OnCollision(Camera* cam)
-{
-	
-	if((cam->GetPosition().x >= this->GetPosition().x-2 && cam->GetPosition().x <= this->GetPosition().x + 2)
-		&& (cam->GetPosition().z >= this->GetPosition().z- 2 && cam->GetPosition().z <= this->GetPosition().z + 2)
-		&& (cam->GetPosition().z >= this->GetPosition().y && cam->GetPosition().y <= this->GetPosition().y + 10.0f))
-	{
-		cam->prevPosition = { cam->GetPosition().x,cam->GetPosition().y,cam->GetPosition().z };
-		return true;
 
-		
+
+
+
+
+
+
+
+
+
+
+
+
+bool Cube::OnCollision(Camera* cam)
+{		
+	return (cam->GetPosition().x >= this->GetPosition().x - 2.5f && cam->GetPosition().x <= this->GetPosition().x + 2)
+			&& (cam->GetPosition().z >= this->GetPosition().z - 2 && cam->GetPosition().z <= this->GetPosition().z + 2)
+			&& (cam->GetPosition().y >= this->GetPosition().y && cam->GetPosition().y <= this->GetPosition().y + 10.0f);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool Cube::OnCollisionExit(Camera* cam)
+{
+	if(cam->Colliding())
+	{
+		if(!OnCollision(cam))
+		{
+			cam->IsColliding(false);
+			return true;
+		}
 	}
+
 	return false;
 }
 

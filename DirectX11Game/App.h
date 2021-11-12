@@ -21,7 +21,10 @@ private:
 	std::unique_ptr<class Cube> singleCube;
 	LevelLoader levelLoader;
 	std::unique_ptr<Camera> cam = std::make_unique<Camera>();
-	const int NUMBER_OF_CUBES = 500;
+	const int NUMBER_OF_CUBES = 900;
+	bool canMove = true;
+	DirectX::XMFLOAT3 vel = { 0.0f,0.0f,0.0f };
+	Cube* cube = nullptr;
 	bool canInput = true;
 };
 
