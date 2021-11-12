@@ -10,24 +10,22 @@
 #include "VertexShader.h"
 #include "TransformBuffer.h"
 
-Cube::Cube(Graphics& gfx,
-	std::mt19937& rng,
-	std::uniform_real_distribution<float>& adist,
-	std::uniform_real_distribution<float>& ddist,
-	std::uniform_real_distribution<float>& odist,
-	std::uniform_real_distribution<float>& rdist)
-	:
-	r(rdist(rng)),
-	deltaRoll(ddist(rng)),
-	deltaPitch(ddist(rng)),
-	deltaYaw(ddist(rng)),
-	deltaPhi(odist(rng)),
-	deltaTheta(odist(rng)),
-	deltaChi(odist(rng)),
-	chi(adist(rng)),
-	theta(adist(rng)),
-	phi(adist(rng))
+Cube::Cube(Graphics& gfx, float width, float height, float depth)
 {
+
+	std::vector<Vertex> vertices =
+	{
+		{ -width,-height,-depth },
+		{ width,-height,-depth },
+		{ -width,height,-depth },
+		{ width,height,-depth },
+		{ -width,-height,depth },
+		{ width,-height,depth },
+		{ -width,height,depth },
+		{ width,height,depth },
+	};
+
+
 	AddBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
 	auto pvs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
@@ -128,11 +126,11 @@ void Cube::SetPosition(float x, float y, float z)
 
 
 
-bool Cube::OnCollision(Camera* cam)
+bool Cube::OnCollision(DirectX::XMFLOAT3 point)
 {		
-	return (cam->GetPosition().x >= this->GetPosition().x - 2.5f && cam->GetPosition().x <= this->GetPosition().x + 2)
-			&& (cam->GetPosition().z >= this->GetPosition().z - 2 && cam->GetPosition().z <= this->GetPosition().z + 2)
-			&& (cam->GetPosition().y >= this->GetPosition().y && cam->GetPosition().y <= this->GetPosition().y + 10.0f);
+	return (point.x >= this->GetPosition().x - 2.5f && point.x <= this->GetPosition().x + 2)
+			&& (point.z >= this->GetPosition().z - 2 && point.z <= this->GetPosition().z + 2)
+			&& (point.y >= this->GetPosition().y && point.y <= this->GetPosition().y + 10.0f);
 }
 
 
@@ -153,7 +151,7 @@ bool Cube::OnCollisionExit(Camera* cam)
 {
 	if(cam->Colliding())
 	{
-		if(!OnCollision(cam))
+		if(!OnCollision(cam->GetPosition()))
 		{
 			cam->IsColliding(false);
 			return true;
@@ -162,6 +160,17 @@ bool Cube::OnCollisionExit(Camera* cam)
 
 	return false;
 }
+
+void Cube::SetActive(bool value)
+{
+	canDraw = value;
+}
+
+bool Cube::IsActive()
+{
+	return canDraw;
+}
+
 
 Vector3 Cube::GetPosition()
 {

@@ -39,6 +39,18 @@ bool LevelLoader::ConstructLevel(Cube* cube)
                 elem.second[i] = ' ';
                 return true;
             }
+            if(elem.second[i] == 'X')
+            {
+                std::vector<Cube*> cubes;
+                if(cubes.size() < 2)
+                {
+                    cubes.push_back(cube);
+                }
+                else
+                {
+                    OutputDebugString("LOL");
+                }
+            }
             
         }
         
